@@ -1,0 +1,77 @@
+name: Frontend Code-Analysis
+run-name: Frontend Code-Analysis started by @${{ github.actor }}
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+      yarn-cache-folder:
+        required: true
+        type: string
+        default: "/home/runner/.cache/.yarn"
+
+jobs:
+
+  code-analysis:
+    runs-on: ubuntu-latest
+    env:
+      YARN_CACHE_FOLDER: ${{ inputs.yarn-cache-folder }}
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout codebase
+        uses: actions/checkout@v3
+
+      - name: Update Global Yarn
+        run: |
+          corepack enable
+          corepack prepare yarn@stable --activate
+
+      - name: Use Node.js ${{ inputs.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'yarn'
+          cache-dependency-path: 'frontend/yarn.lock'
+
+      - name: Prettier
+        id: prettier
+        run: |
+          npx prettier@2.0.5 --single-quote --check 'src/**/*.{js,jsx,ts,tsx,css,scss}' --config=package.json
+
+      - name: Install packages
+        run: |
+          make install
+
+      - name: ESLint
+        id: eslint
+        if: ${{ success() || failure() }}
+        run: |
+          yarn run lint:ci
+
+      - name: i18n sync
+        id: i18n
+        if: ${{ success() || failure() }}
+        run: |
+          make i18n-ci
+
+      - name: Unit Tests
+        id: unit
+        if: ${{ success() || failure() }}
+        run: |
+          make test
+
+      - name: Report
+        if: ${{ success() || failure() }}
+        run: |
+          echo '# Code Analysis' >> $GITHUB_STEP_SUMMARY
+          echo '| Test | Status |' >> $GITHUB_STEP_SUMMARY
+          echo '| --- | --- |' >> $GITHUB_STEP_SUMMARY
+          echo '| Prettier | ${{ steps.prettier.conclusion == 'failure' && '❌' || ' ✅' }} |' >> $GITHUB_STEP_SUMMARY
+          echo '| ESLint | ${{ steps.eslint.conclusion == 'failure' && '❌' || ' ✅' }} |' >> $GITHUB_STEP_SUMMARY
+          echo '| i18n | ${{ steps.i18n.conclusion == 'failure' && '❌' || ' ✅' }} |' >> $GITHUB_STEP_SUMMARY
+          echo '| Unit Tests | ${{ steps.unit.conclusion == 'failure' && '❌' || ' ✅' }} |' >> $GITHUB_STEP_SUMMARY

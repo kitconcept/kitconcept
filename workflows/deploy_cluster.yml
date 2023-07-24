@@ -1,0 +1,59 @@
+name: Deploy Stack to kitconcept cluster
+run-name: Deployment ${{ inputs.stack-name }} to cluster started by @${{ github.actor }}
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      stack-name:
+        required: true
+        type: string
+      stack-file:
+        required: true
+        type: string
+      stack-param:
+        required: true
+        type: string
+        default: ""
+    secrets:
+      registry-username:
+        required: true
+      registry-password:
+        required: true
+      remote-host:
+        required: true
+      remote-port:
+        required: true
+      remote-user:
+        required: true
+      remote-private-key:
+        required: true
+      env-file:
+        required: true
+
+jobs:
+
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Deploy to intra.kitconcept.com
+        uses: kitconcept/docker-stack-deploy@v1.2.0
+        with:
+          registry: "ghcr.io"
+          username: ${{ secrets.registry-username }}
+          password: ${{ secrets.registry-password }}
+          remote_host: ${{ secrets.remote-host }}
+          remote_port: ${{ secrets.remote-port }}
+          remote_user: ${{ secrets.remote-user }}
+          remote_private_key: ${{ secrets.remote-private-key }}
+          env_file: ${{ secrets.env-file }}
+          stack_name: ${{ secrets.stack-name }}
+          stack_file: ${{ secrets.stack-file }}
+          stack_param: ${{ secrets.stack-param }}
+          deploy_timeout: 480
