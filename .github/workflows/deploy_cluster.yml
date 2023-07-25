@@ -53,7 +53,7 @@ jobs:
           remote_user: ${{ secrets.remote-user }}
           remote_private_key: ${{ secrets.remote-private-key }}
           env_file: ${{ secrets.env-file }}
-          stack_name: ${{ secrets.stack-name }}
-          stack_file: ${{ secrets.stack-file }}
-          stack_param: ${{ secrets.stack-param }}
+          stack_name: ${{ inputs.stack-name }}
+          stack_file: ${{ inputs.stack-file }}
+          stack_param: ${{ inputs.stack-param }}
           deploy_timeout: 480
