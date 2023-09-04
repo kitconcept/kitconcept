@@ -11,6 +11,10 @@ on:
         required: false
         type: boolean
         default: true
+      node-version:
+        required: false
+        type: string
+        default: ""
       image-name:
         required: true
         type: string
@@ -84,6 +88,12 @@ jobs:
           registry: ghcr.io
           username: ${{ secrets.registry-username }}
           password: ${{ secrets.registry-password }}
+
+      - name: "Setup a default node"
+        if: inputs.node-version
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node-version }}
 
       - name: "Run msdev to get sources"
         if: inputs.use-msdev
