@@ -51,7 +51,7 @@ jobs:
         id: eslint
         if: ${{ success() || failure() }}
         run: |
-          yarn run lint:ci
+          yarn run lint
 
       - name: i18n sync
         id: i18n
