@@ -38,6 +38,10 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: 'frontend/yarn.lock'
 
+      - name: Run install
+        run: |
+          yarn
+
       - name: Prettier
         id: prettier
         run: |
