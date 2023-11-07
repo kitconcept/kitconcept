@@ -38,18 +38,14 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: 'frontend/yarn.lock'
 
-      - name: Run install
+      - name: Install packages
         run: |
-          yarn
+          make install
 
       - name: Prettier
         id: prettier
         run: |
           yarn prettier
-
-      - name: Install packages
-        run: |
-          make install
 
       - name: ESLint
         id: eslint
