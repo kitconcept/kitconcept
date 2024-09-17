@@ -57,4 +57,4 @@ jobs:
           stack_name: ${{ inputs.stack-name }}
           stack_file: ${{ inputs.stack-file }}
           stack_param: ${{ inputs.stack-param }}
-          deploy_timeout: 480
+          deploy_timeout: 960
