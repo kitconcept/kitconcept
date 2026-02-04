@@ -17,6 +17,10 @@ on:
         required: true
         type: string
         default: ""
+      scale-after:
+        required: false
+        type: string
+        default: ""
     secrets:
       registry-username:
         required: true
@@ -44,7 +48,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Deploy to ${{ inputs.stack-name }}
-        uses: kitconcept/docker-stack-deploy@v1.2.0
+        uses: kitconcept/docker-stack-deploy@v1.3.0
         with:
           registry: "ghcr.io"
           username: ${{ secrets.registry-username }}
@@ -57,4 +61,5 @@ jobs:
           stack_name: ${{ inputs.stack-name }}
           stack_file: ${{ inputs.stack-file }}
           stack_param: ${{ inputs.stack-param }}
+          scale_after: ${{ inputs.scale-after }}
           deploy_timeout: 960
